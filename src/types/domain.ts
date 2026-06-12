@@ -1,18 +1,8 @@
 export type Goal = 'push_stage' | 'farm_gold' | 'boss' | 'survie'
 
-export type PriorityLabel =
-  | 'Priorité très élevée'
-  | 'Priorité élevée'
-  | 'Priorité moyenne'
-  | 'Priorité faible'
+export type Priority = 'very-high' | 'high' | 'medium' | 'low'
 
-export type Rarity =
-  | 'exemple'
-  | 'commun'
-  | 'rare'
-  | 'epique'
-  | 'legendaire'
-  | 'mythique'
+export type Rarity = 'exemple' | 'commun' | 'rare' | 'epique' | 'legendaire' | 'mythique'
 
 export type PlayerInfo = {
   name: string
@@ -91,6 +81,17 @@ export type PlayerProfile = {
   relics: PlayerRelic[]
 }
 
+export type ProfileUpdate = {
+  player?: Partial<PlayerInfo>
+  resources?: Partial<PlayerResources>
+  stats?: Partial<PlayerStats>
+  growth?: Partial<GrowthData>
+  skills?: PlayerProfile['skills']
+  companions?: PlayerProfile['companions']
+  equipment?: PlayerProfile['equipment']
+  relics?: PlayerProfile['relics']
+}
+
 export type Snapshot = {
   id: string
   date: string
@@ -102,13 +103,15 @@ export type Snapshot = {
   goldPerMinute: number
 }
 
+export type RecommendationCategory = 'stat' | 'growth' | 'skill' | 'resource' | 'build'
+
 export type Recommendation = {
   id: string
   name: string
   score: number
-  priorityLabel: PriorityLabel
+  priority: Priority
   reason: string
-  category: 'stat' | 'growth' | 'skill' | 'resource' | 'build'
+  category: RecommendationCategory
 }
 
 export type Build = {

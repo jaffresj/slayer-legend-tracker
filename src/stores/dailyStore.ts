@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import type { DailyChecklist } from '../types/domain'
-import { getTodayKey } from '../utils/dates'
+import { getTodayKey } from '@/lib/dates'
+import type { DailyChecklist } from '@/types/domain'
 
 type DailyState = {
   daily: DailyChecklist
@@ -12,21 +12,24 @@ type DailyState = {
   resetDaily: () => void
 }
 
+const DEFAULT_TASKS: ReadonlyArray<{ id: string; label: string }> = [
+  { id: 'dungeons', label: 'Donjons' },
+  { id: 'boss', label: 'Boss' },
+  { id: 'quests', label: 'Quêtes' },
+  { id: 'events', label: 'Événements' },
+  { id: 'rewards', label: 'Récompenses' },
+]
+
 export function createDailyChecklist(date = getTodayKey()): DailyChecklist {
   return {
     date,
-    tasks: [
-      { id: 'dungeons', label: 'Donjons', done: false },
-      { id: 'boss', label: 'Boss', done: false },
-      { id: 'quests', label: 'Quêtes', done: false },
-      { id: 'events', label: 'Événements', done: false },
-      { id: 'rewards', label: 'Récompenses', done: false },
-    ],
+    tasks: DEFAULT_TASKS.map((task) => ({ ...task, done: false })),
     notes: '',
   }
 }
 
-function resetIfNeeded(daily: DailyChecklist) {
+/** Repart d'une checklist vierge si la date stockée n'est plus aujourd'hui. */
+export function resetIfNeeded(daily: DailyChecklist): DailyChecklist {
   const today = getTodayKey()
   return daily.date === today ? daily : createDailyChecklist(today)
 }
@@ -35,10 +38,7 @@ export const useDailyStore = create<DailyState>()(
   persist(
     (set) => ({
       daily: createDailyChecklist(),
-      ensureToday: () =>
-        set((state) => ({
-          daily: resetIfNeeded(state.daily),
-        })),
+      ensureToday: () => set((state) => ({ daily: resetIfNeeded(state.daily) })),
       toggleTask: (id) =>
         set((state) => {
           const daily = resetIfNeeded(state.daily)
@@ -51,15 +51,13 @@ export const useDailyStore = create<DailyState>()(
             },
           }
         }),
-      updateNotes: (notes) =>
-        set((state) => ({
-          daily: { ...resetIfNeeded(state.daily), notes },
-        })),
+      updateNotes: (notes) => set((state) => ({ daily: { ...resetIfNeeded(state.daily), notes } })),
       replaceDaily: (daily) => set({ daily }),
       resetDaily: () => set({ daily: createDailyChecklist() }),
     }),
     {
       name: 'slayer-daily-v1',
+      version: 1,
       storage: createJSONStorage(() => localStorage),
     },
   ),

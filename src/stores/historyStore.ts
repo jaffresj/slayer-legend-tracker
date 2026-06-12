@@ -1,27 +1,16 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import type { PlayerProfile, Snapshot } from '../types/domain'
-import { getDateTimeKey, makeId } from '../utils/dates'
-import { defaultProfile } from './profileStore'
+import { defaultProfile } from '@/data'
+import { snapshotFromProfile } from '@/lib/profile'
+import type { PlayerProfile, Snapshot } from '@/types/domain'
+
+const MAX_SNAPSHOTS = 365
 
 type HistoryState = {
   snapshots: Snapshot[]
   addSnapshot: (profile: PlayerProfile) => void
   replaceSnapshots: (snapshots: Snapshot[]) => void
   resetSnapshots: () => void
-}
-
-export function snapshotFromProfile(profile: PlayerProfile): Snapshot {
-  return {
-    id: makeId('snapshot'),
-    date: getDateTimeKey(),
-    level: profile.player.level,
-    stage: profile.player.stage,
-    attack: profile.stats.attack,
-    criticalRate: profile.stats.criticalRate,
-    deathStrike: profile.stats.deathStrike,
-    goldPerMinute: profile.stats.goldPerMinute,
-  }
 }
 
 const defaultSnapshots = [snapshotFromProfile(defaultProfile)]
@@ -32,13 +21,14 @@ export const useHistoryStore = create<HistoryState>()(
       snapshots: defaultSnapshots,
       addSnapshot: (profile) =>
         set((state) => ({
-          snapshots: [...state.snapshots, snapshotFromProfile(profile)].slice(-365),
+          snapshots: [...state.snapshots, snapshotFromProfile(profile)].slice(-MAX_SNAPSHOTS),
         })),
       replaceSnapshots: (snapshots) => set({ snapshots }),
       resetSnapshots: () => set({ snapshots: defaultSnapshots }),
     }),
     {
       name: 'slayer-snapshots-v1',
+      version: 1,
       storage: createJSONStorage(() => localStorage),
     },
   ),

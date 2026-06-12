@@ -1,8 +1,27 @@
 @import "tailwindcss";
 
+/*
+  Design tokens (Tailwind v4 @theme). Centralise la palette et les rayons pour
+  que le thème vive à un seul endroit. Les primitives de src/components/ui
+  consomment ces tokens via les classes Tailwind générées (bg-surface, etc.).
+*/
+@theme {
+  --color-canvas: #020617;
+  --color-surface: #0f172a;
+  --color-surface-raised: #111c33;
+  --color-border: #1e293b;
+  --color-border-strong: #334155;
+
+  --color-accent: #f59e0b;
+  --color-accent-soft: #fcd34d;
+
+  --radius-control: 0.5rem;
+}
+
 :root {
+  color-scheme: dark;
   color: #e2e8f0;
-  background: #020617;
+  background: var(--color-canvas);
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-synthesis: none;
@@ -15,15 +34,15 @@
   box-sizing: border-box;
 }
 
-html {
-  background: #020617;
+html,
+body {
+  background: var(--color-canvas);
 }
 
 body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  background: #020617;
 }
 
 button,
@@ -39,6 +58,17 @@ button {
 
 button:disabled {
   cursor: not-allowed;
+}
+
+/* Réduit les animations pour les utilisateurs qui le demandent (a11y). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 ::selection {

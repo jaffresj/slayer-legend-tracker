@@ -1,9 +1,12 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { App } from '@/app/App'
 import './style.css'
-import { App } from './App'
 
-createRoot(document.getElementById('app')!).render(
+const container = document.getElementById('app')
+if (!container) throw new Error('Élément racine #app introuvable dans index.html')
+
+createRoot(container).render(
   <StrictMode>
     <App />
   </StrictMode>,
