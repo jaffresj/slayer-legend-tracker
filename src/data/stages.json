@@ -1,0 +1,24 @@
+[
+  {
+    "id": "sample-stage-160",
+    "name": "Palier 160 exemple",
+    "rarity": "exemple",
+    "description": "Donnée d'exemple non officielle pour tester l'historique.",
+    "type": "stage",
+    "tags": ["progression"],
+    "stage": 160,
+    "zone": "Zone exemple",
+    "recommendedAttack": 15000
+  },
+  {
+    "id": "sample-stage-200",
+    "name": "Palier 200 exemple",
+    "rarity": "exemple",
+    "description": "Donnée d'exemple non officielle pour les recommandations.",
+    "type": "stage",
+    "tags": ["boss", "progression"],
+    "stage": 200,
+    "zone": "Zone avancée exemple",
+    "recommendedAttack": 30000
+  }
+]

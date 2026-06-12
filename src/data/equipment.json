@@ -1,0 +1,18 @@
+[
+  {
+    "id": "sample-sword",
+    "name": "Épée exemple",
+    "rarity": "exemple",
+    "description": "Donnée d'exemple non officielle pour l'équipement visible.",
+    "type": "arme",
+    "tags": ["attaque", "critique"]
+  },
+  {
+    "id": "sample-armor",
+    "name": "Armure exemple",
+    "rarity": "exemple",
+    "description": "Donnée d'exemple non officielle pour l'équipement défensif.",
+    "type": "armure",
+    "tags": ["survie", "defense"]
+  }
+]

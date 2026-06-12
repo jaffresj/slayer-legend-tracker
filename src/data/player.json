@@ -1,0 +1,46 @@
+{
+  "player": {
+    "name": "Joueur exemple",
+    "level": 511,
+    "stage": 160,
+    "zone": "Zone exemple"
+  },
+  "resources": {
+    "diamonds": 1280,
+    "emeralds": 340,
+    "gold": 2500000,
+    "souls": 75
+  },
+  "stats": {
+    "attack": 15787,
+    "estimatedDamage": 42100,
+    "criticalRate": 32,
+    "criticalDamage": 185,
+    "deathStrike": 12,
+    "goldPerMinute": 84000,
+    "health": 9200,
+    "defense": 3100
+  },
+  "growth": {
+    "attack": 115,
+    "health": 88,
+    "recovery": 42,
+    "critical": 61,
+    "deathStrike": 28
+  },
+  "skills": [
+    {
+      "id": "sample-critical-edge",
+      "name": "Lame critique exemple",
+      "rarity": "exemple",
+      "description": "Donnée d'exemple non officielle pour tester les builds.",
+      "type": "attaque",
+      "tags": ["critique", "progression"],
+      "level": 24,
+      "equipped": true
+    }
+  ],
+  "companions": [],
+  "equipment": [],
+  "relics": []
+}

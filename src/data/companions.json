@@ -1,0 +1,18 @@
+[
+  {
+    "id": "sample-companion-flame",
+    "name": "Compagnon flamme exemple",
+    "rarity": "exemple",
+    "description": "Donnée d'exemple non officielle pour valider la structure.",
+    "type": "compagnon",
+    "tags": ["attaque", "progression"]
+  },
+  {
+    "id": "sample-companion-guard",
+    "name": "Compagnon garde exemple",
+    "rarity": "exemple",
+    "description": "Donnée d'exemple non officielle pour les profils défensifs.",
+    "type": "compagnon",
+    "tags": ["survie", "defense"]
+  }
+]

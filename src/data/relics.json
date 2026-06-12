@@ -1,0 +1,18 @@
+[
+  {
+    "id": "sample-relic-gold",
+    "name": "Relique dorée exemple",
+    "rarity": "exemple",
+    "description": "Donnée d'exemple non officielle pour les gains de ressources.",
+    "type": "relique",
+    "tags": ["or", "farm"]
+  },
+  {
+    "id": "sample-relic-boss",
+    "name": "Relique du boss exemple",
+    "rarity": "exemple",
+    "description": "Donnée d'exemple non officielle pour les combats de boss.",
+    "type": "relique",
+    "tags": ["boss", "attaque"]
+  }
+]
