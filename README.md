@@ -2,66 +2,84 @@
 
 Application web locale d'aide à la progression pour Slayer Legends: Idle RPG.
 
-Cette V1 n'automatise jamais le jeu : pas de clic automatique, pas de bot, pas de lecture temps réel de l'écran, pas d'injection et pas d'autofarm. Elle analyse uniquement des données saisies ou des captures importées par le joueur.
+Cette application n'automatise jamais le jeu : pas de clic automatique, pas de
+bot, pas de lecture temps réel de l'écran, pas d'injection et pas d'autofarm.
+Elle analyse uniquement des données saisies ou des captures importées par le
+joueur, stockées localement (LocalStorage).
 
-## Installation
+## Stack
+
+React 19 · TypeScript (strict) · Vite · Tailwind CSS v4 · Zustand · React Query ·
+Recharts · Tesseract.js (OCR) · Vitest + Testing Library.
+
+## Démarrage
 
 ```bash
 npm install
+npm run dev          # serveur de dev
 ```
 
-## Lancement
+## Scripts
 
-```bash
-npm run dev
-```
-
-Build de vérification :
-
-```bash
-npm run build
-```
+| Script | Rôle |
+|--------|------|
+| `npm run dev` | Serveur de développement Vite |
+| `npm run build` | Typecheck (`tsc`) puis build de production |
+| `npm run preview` | Sert le build de production |
+| `npm run typecheck` | Vérification de types seule |
+| `npm run lint` / `lint:fix` | ESLint |
+| `npm run format` / `format:check` | Prettier |
+| `npm test` / `test:watch` / `test:coverage` | Vitest |
+| `npm run validate` | typecheck + lint + tests (à lancer avant un commit/PR) |
 
 ## Structure du projet
 
-- `src/pages` : pages principales (`/`, `/import`, `/history`, `/profile`, `/builds`, `/daily`, `/settings`).
-- `src/stores` : stores Zustand persistés dans LocalStorage.
-- `src/features/ocr` : OCR Tesseract.js et extracteurs texte.
-- `src/features/recommendations` : moteur de priorités.
-- `src/data` : données JSON d'exemple, non officielles.
-- `src/types` : types TypeScript partagés.
+```
+src/
+  app/          Composition racine : providers (App.tsx) + routes lazy (routes.tsx)
+  components/
+    ui/         Primitives réutilisables (Button, Card, Field, Select, Badge, Banner, StatTile, EmptyState)
+    layout/     Chrome de l'app (AppLayout, Sidebar, PageHeader, navigation)
+    charts/     ProgressChart (frontière Recharts, chargée à la demande)
+  features/     Une route = un dossier (dashboard, import, history, profile, builds, daily, settings)
+                  <Page>.tsx + components/ + hooks/ + index.ts
+  hooks/        Hooks transverses (useStatusMessage)
+  lib/          Utilitaires purs sans dépendance app (format, dates, classes, labels, profile, validate)
+  services/     Logique métier indépendante du framework (recommendations, ocr, persistence)
+  stores/       Stores Zustand persistés (versionnés)
+  types/        Types de domaine partagés (domain.ts)
+  data/         Données JSON d'exemple + accès typé (index.ts)
+```
 
-## Ajouter un parseur OCR
+**Règle de dépendances** : `data`/`lib`/`types` ne dépendent de rien ;
+`components/ui` ne dépend que de `lib`/`types` ; `features` composent
+`components` + `stores` + `services`. Aucune dépendance « vers le haut »
+(un store n'importe jamais une feature).
 
-Les extracteurs se trouvent dans `src/features/ocr/extractors.ts`.
+## Ajouter / améliorer l'OCR
 
-Pour améliorer l'OCR :
-
-1. Ajouter une nouvelle règle dans `extractPlayerData`, `extractStats`, `extractSkills` ou `extractGrowth`.
-2. Garder une valeur éditable dans la page `/import`.
-3. Tester avec une capture réelle puis vérifier le profil avant sauvegarde.
+Les extracteurs sont dans `src/services/ocr/extractors.ts` (fonctions pures,
+couvertes par `extractors.test.ts`). Pour ajouter une règle : étendre
+`extractStats` / `extractPlayerData` / `extractGrowth` / `extractSkills`, garder
+la valeur éditable dans `/import`, et vérifier le profil avant sauvegarde.
+Tesseract.js est chargé dynamiquement (uniquement au lancement d'un scan).
 
 ## Ajouter des données du jeu
 
-Les fichiers modifiables sont :
+Modifier les fichiers dans `src/data/` (`skills.json`, `companions.json`,
+`equipment.json`, `relics.json`, `stages.json`). Chaque entrée garde la base
+`{ id, name, rarity, description, type, tags }`. `src/data/data.test.ts` valide
+automatiquement la structure de chaque fichier.
 
-- `src/data/skills.json`
-- `src/data/companions.json`
-- `src/data/equipment.json`
-- `src/data/relics.json`
-- `src/data/stages.json`
+## Documentation d'architecture & audits
 
-Chaque entrée doit garder cette base :
+Le dossier [`docs/`](./docs) contient l'audit complet et les revues :
 
-```json
-{
-  "id": "sample-id",
-  "name": "Nom",
-  "rarity": "exemple",
-  "description": "Donnée d'exemple non officielle.",
-  "type": "type",
-  "tags": ["tag"]
-}
-```
-
-Remplacer les données d'exemple uniquement par des données que vous avez le droit d'utiliser.
+- [AUDIT](./docs/AUDIT.md) — audit complet (sévérité / impact / reco)
+- [ARCHITECTURE](./docs/ARCHITECTURE.md) — structure cible & migration
+- [DESIGN](./docs/DESIGN.md) — design system + revue UI/UX (top 20)
+- [PERFORMANCE](./docs/PERFORMANCE.md) — bundle & code splitting
+- [TYPESCRIPT](./docs/TYPESCRIPT.md) — typage strict & validation runtime
+- [TESTING](./docs/TESTING.md) — stratégie et roadmap de tests
+- [DX](./docs/DX.md) — outillage & conventions
+- [ROADMAP](./docs/ROADMAP.md) — feuille de route V2 priorisée
