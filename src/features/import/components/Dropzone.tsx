@@ -34,7 +34,10 @@ export function Dropzone({ previews, onAddFiles, onClear, progress }: DropzonePr
         <UploadCloud className="text-amber-200" size={34} aria-hidden />
         <div>
           <p className="font-semibold text-slate-100">Déposer les images</p>
-          <p className="mt-1 text-sm text-slate-500">PNG, JPG ou WebP</p>
+          <p className="mt-1 text-sm text-slate-500">
+            Captures d’écran nettes (PNG/JPG) — évite les photos d’écran. Recadre sur un seul
+            panneau (Personnage, Croissance…) pour de meilleurs résultats.
+          </p>
         </div>
         <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-slate-700 px-3 text-sm font-semibold text-slate-200 transition hover:border-amber-400/45 hover:text-amber-100 focus-within:ring-2 focus-within:ring-amber-300/60">
           <ImageIcon size={18} aria-hidden />

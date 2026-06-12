@@ -21,16 +21,16 @@ npm run dev          # serveur de dev
 
 ## Scripts
 
-| Script | Rôle |
-|--------|------|
-| `npm run dev` | Serveur de développement Vite |
-| `npm run build` | Typecheck (`tsc`) puis build de production |
-| `npm run preview` | Sert le build de production |
-| `npm run typecheck` | Vérification de types seule |
-| `npm run lint` / `lint:fix` | ESLint |
-| `npm run format` / `format:check` | Prettier |
-| `npm test` / `test:watch` / `test:coverage` | Vitest |
-| `npm run validate` | typecheck + lint + tests (à lancer avant un commit/PR) |
+| Script                                      | Rôle                                                   |
+| ------------------------------------------- | ------------------------------------------------------ |
+| `npm run dev`                               | Serveur de développement Vite                          |
+| `npm run build`                             | Typecheck (`tsc`) puis build de production             |
+| `npm run preview`                           | Sert le build de production                            |
+| `npm run typecheck`                         | Vérification de types seule                            |
+| `npm run lint` / `lint:fix`                 | ESLint                                                 |
+| `npm run format` / `format:check`           | Prettier                                               |
+| `npm test` / `test:watch` / `test:coverage` | Vitest                                                 |
+| `npm run validate`                          | typecheck + lint + tests (à lancer avant un commit/PR) |
 
 ## Structure du projet
 
@@ -59,10 +59,22 @@ src/
 ## Ajouter / améliorer l'OCR
 
 Les extracteurs sont dans `src/services/ocr/extractors.ts` (fonctions pures,
-couvertes par `extractors.test.ts`). Pour ajouter une règle : étendre
-`extractStats` / `extractPlayerData` / `extractGrowth` / `extractSkills`, garder
-la valeur éditable dans `/import`, et vérifier le profil avant sauvegarde.
+couvertes par `extractors.test.ts` et `extractors.realworld.test.ts`).
 Tesseract.js est chargé dynamiquement (uniquement au lancement d'un scan).
+
+**Qualité des images.** L'OCR est fiable sur des **captures d'écran nettes**,
+pas sur des photos d'écran (reflets, angle, moiré dégradent fortement la
+reconnaissance). Recadrer sur un seul panneau aide. Toutes les valeurs restent
+éditables dans `/import` : il faut vérifier avant d'enregistrer.
+
+**Vocabulaire du jeu (FR).** Les libellés sont centralisés dans la constante
+`LABELS` de `extractors.ts`. Le jeu utilise des abréviations : `Niv.` (niveau),
+`Étape` (stage, ≠ « étage »), `ATQ` (attaque), `PV` (vie), `Frappe Mortelle`,
+`Dgt CRIT`, `Récupération`… Pour ajouter une règle : ajouter l'alternative au
+libellé concerné dans `LABELS`, ajouter un cas dans
+`extractors.realworld.test.ts` avec un fragment réel, puis vérifier le profil
+avant sauvegarde. Les libellés courts (2-3 lettres : `or`, `pv`, `niv`) sont
+bornés par `\b` pour éviter les faux positifs.
 
 ## Ajouter des données du jeu
 

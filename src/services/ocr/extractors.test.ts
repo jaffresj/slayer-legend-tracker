@@ -12,9 +12,14 @@ describe('parseLooseNumber', () => {
     expect(parseLooseNumber(input)).toBe(expected)
   })
 
-  it('retourne undefined pour une valeur non numérique', () => {
-    // Capture OCR brouillée : plusieurs séparateurs → Number() = NaN.
-    expect(parseLooseNumber('1.2.3')).toBeUndefined()
+  it('retourne undefined quand il n’y a aucun chiffre', () => {
+    expect(parseLooseNumber('Niv.')).toBeUndefined()
+    expect(parseLooseNumber('aucune donnée')).toBeUndefined()
+  })
+
+  it('ne colle pas deux nombres séparés par une espace courte', () => {
+    // « Niv. 511 28,16 % » ne doit pas donner 51128.
+    expect(parseLooseNumber('511 28,16')).toBe(511)
   })
 })
 
@@ -31,10 +36,16 @@ describe('extractStats', () => {
 })
 
 describe('extractSkills', () => {
-  it('détecte les lignes "nom niveau N"', () => {
-    const skills = extractSkills('Lame critique niveau 24\nbruit\nGarde lv 5')
+  it('détecte le format de maîtrise réel "Nom courant/max"', () => {
+    const skills = extractSkills('Épée Brûlante 4/16\nbruit\nMana de vie 27/3')
     expect(skills).toHaveLength(2)
-    expect(skills[0]).toMatchObject({ name: 'Lame critique', level: 24, rarity: 'exemple' })
+    expect(skills[0]).toMatchObject({ name: 'Épée Brûlante', level: 4, rarity: 'exemple' })
+  })
+
+  it('ne confond PAS les lignes de stats "Libellé Niv.N" avec des compétences', () => {
+    // Régression : ces lignes remplissaient la liste de compétences de déchets.
+    const skills = extractSkills('Dgt CRIT Niv.4125\nFrappe Mortelle Niv.551\nATQ Niv.16055')
+    expect(skills).toEqual([])
   })
 })
 
