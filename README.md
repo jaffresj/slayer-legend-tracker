@@ -9,8 +9,12 @@ joueur, stockées localement (LocalStorage).
 
 ## Stack
 
-React 19 · TypeScript (strict) · Vite · Tailwind CSS v4 · Zustand · React Query ·
-Recharts · Tesseract.js (OCR) · Vitest + Testing Library.
+React 19 · TypeScript (strict) · Vite · Tailwind CSS v4 · Zustand · Recharts ·
+Vitest + Testing Library.
+
+> L'import OCR (Tesseract.js) a été retiré : peu fiable sur l'UI pixel-art du
+> jeu. La saisie est désormais **manuelle** — stats via la page Profil,
+> compétences/builds via un catalogue réel sur la page Builds.
 
 ## Démarrage
 
@@ -41,7 +45,7 @@ src/
     ui/         Primitives réutilisables (Button, Card, Field, Select, Badge, Banner, StatTile, EmptyState)
     layout/     Chrome de l'app (AppLayout, Sidebar, PageHeader, navigation)
     charts/     ProgressChart (frontière Recharts, chargée à la demande)
-  features/     Une route = un dossier (dashboard, import, history, profile, builds, daily, settings)
+  features/     Une route = un dossier (dashboard, history, profile, builds, daily, settings)
                   <Page>.tsx + components/ + hooks/ + index.ts
   hooks/        Hooks transverses (useStatusMessage)
   lib/          Utilitaires purs sans dépendance app (format, dates, classes, labels, profile, validate)
@@ -56,25 +60,29 @@ src/
 `components` + `stores` + `services`. Aucune dépendance « vers le haut »
 (un store n'importe jamais une feature).
 
-## Ajouter / améliorer l'OCR
+## Saisie manuelle des données
 
-Les extracteurs sont dans `src/services/ocr/extractors.ts` (fonctions pures,
-couvertes par `extractors.test.ts` et `extractors.realworld.test.ts`).
-Tesseract.js est chargé dynamiquement (uniquement au lancement d'un scan).
+La saisie est manuelle (l'OCR a été retiré) :
 
-**Qualité des images.** L'OCR est fiable sur des **captures d'écran nettes**,
-pas sur des photos d'écran (reflets, angle, moiré dégradent fortement la
-reconnaissance). Recadrer sur un seul panneau aide. Toutes les valeurs restent
-éditables dans `/import` : il faut vérifier avant d'enregistrer.
+- **Stats du joueur** (niveau, stage, attaque, ressources, croissance…) : page
+  **Profil**, champs éditables.
+- **Compétences & builds** : page **Builds**, à partir d'un catalogue réel du
+  jeu (`src/data/skills.ts`) et de builds méta (`src/data/buildTemplates.ts`).
 
-**Vocabulaire du jeu (FR).** Les libellés sont centralisés dans la constante
-`LABELS` de `extractors.ts`. Le jeu utilise des abréviations : `Niv.` (niveau),
-`Étape` (stage, ≠ « étage »), `ATQ` (attaque), `PV` (vie), `Frappe Mortelle`,
-`Dgt CRIT`, `Récupération`… Pour ajouter une règle : ajouter l'alternative au
-libellé concerné dans `LABELS`, ajouter un cas dans
-`extractors.realworld.test.ts` avec un fragment réel, puis vérifier le profil
-avant sauvegarde. Les libellés courts (2-3 lettres : `or`, `pv`, `niv`) sont
-bornés par `\b` pour éviter les faux positifs.
+### Étendre le catalogue de compétences
+
+`src/data/skills.ts` est un module TypeScript type-vérifié. Chaque compétence a
+`id`, `name` (FR en jeu), `nameEn` (guide EN), `element`, `kind`, `tags`, et des
+`aliases` optionnels. `as const satisfies` valide chaque entrée et produit le
+type `SkillId`. Marquer `tentative: true` si la traduction FR n'est pas
+confirmée par une capture.
+
+### Ajouter un build méta
+
+`src/data/buildTemplates.ts` référence les compétences par `id`. Le type
+`skills: readonly SkillId[]` **valide les ids à la compilation** : un build qui
+cite une compétence absente du catalogue casse le build TypeScript. Couvert par
+`src/data/data.test.ts` et `src/lib/skills.test.ts`.
 
 ## Ajouter des données du jeu
 

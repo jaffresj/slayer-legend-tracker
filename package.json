@@ -40,13 +40,11 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
-    "@tanstack/react-query": "^5.101.0",
     "@vitejs/plugin-react": "^6.0.2",
     "lucide-react": "^1.18.0",
     "react-router-dom": "^7.17.0",
     "recharts": "^3.8.1",
     "tailwindcss": "^4.3.0",
-    "tesseract.js": "^7.0.0",
     "zustand": "^5.0.14"
   }
 }

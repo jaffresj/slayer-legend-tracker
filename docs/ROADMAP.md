@@ -5,60 +5,79 @@ _gameplay_ features — this is platform/quality work, per the brief.
 
 Legend: Impact/Value H/M/L · Difficulty & Risk L/M/H.
 
-> Many "quick wins" from the audit are **already shipped** in commit `cb58b64`
-> (strict TS, code splitting, lazy OCR, validation, primitives, a11y, tests,
-> tooling). The items below are what remains.
+> Many "quick wins" from the audit are **already shipped** (strict TS, code
+> splitting, validation, primitives, a11y, tests, tooling). The items below are
+> what remains.
+>
+> **Direction change:** OCR was **removed** (unreliable on the game's pixel-art
+> UI) and replaced by manual entry + a real **skills catalog & meta-build
+> picker**. Any OCR-related items below (self-hosting Tesseract, etc.) are void.
+> The new thread is the manual data system — see "Manual data system" below.
 
-## 0. Already delivered this pass ✅
-Strict TypeScript · `@/` alias · feature architecture · `lib`/`services` split ·
-runtime validation on import · route splitting · dynamic Tesseract · Recharts
-chunked · UI primitives + tokens · focus rings / skip-link / ARIA / reduced-motion ·
-ESLint + Prettier + Vitest (50 tests) · object-URL leak fixed · dead assets removed.
+## 0. Already delivered ✅
+
+Strict TypeScript, `@/` alias, feature architecture, `lib`/`services` split,
+runtime validation on import, route splitting, Recharts chunked, UI primitives
+and tokens, focus rings / skip-link / ARIA / reduced-motion, ESLint + Prettier +
+Vitest, dead assets removed, **OCR removed (Tesseract + React Query deleted)**,
+and a **real 41-skill catalog + 18 meta-build templates + manual build picker**.
+
+## Manual data system (replaces OCR) — the new main thread
+
+| Slice                                                          | Status  | Notes                                                             |
+| -------------------------------------------------------------- | ------- | ----------------------------------------------------------------- |
+| Skills catalog (FR + EN, element/kind/tags)                    | ✅      | `src/data/skills.ts`, type-checked, `SkillId` union               |
+| Meta build templates from the guide                            | ✅      | `src/data/buildTemplates.ts`, ids compile-validated               |
+| Builds page: search picker + clone meta builds                 | ✅      | —                                                                 |
+| **Profile: pick owned skills from catalog** (vs raw JSON)      | 🟡 next | replaces the skills JSON textarea; needs a skill+level row editor |
+| Equipment + effects catalog & picker                           | 🟡      | **needs data** from the user/community                            |
+| Spirits board, Promotions, Companions data                     | 🟡      | partial data; needs sources                                       |
+| Recommend a meta build from the selected goal on the Dashboard | 🟡      | wire `buildTemplates` into the recommendation panel               |
 
 ---
 
 ## 1. Quick wins — ~1 day total
 
-| Item | Impact | Diff | Risk | Value |
-|------|:---:|:---:|:---:|:---:|
-| Husky + lint-staged + GitHub Actions running `npm run validate` + build | H | L | L | H |
-| Route prefetch on nav `mouseenter` (`import()` the next chunk) | M | L | L | M |
-| Debounce Import raw-text re-parse (250 ms) | M | L | L | M |
-| Persistence round-trip tests (export→import, corrupt import) | M | L | L | H |
-| `EmptyState` on empty history/snapshots; chart skeleton during lazy load | M | L | L | M |
-| Filename with date on export; "copy to clipboard" | L | L | L | M |
+| Item                                                                     | Impact | Diff | Risk | Value |
+| ------------------------------------------------------------------------ | :----: | :--: | :--: | :---: |
+| Husky + lint-staged + GitHub Actions running `npm run validate` + build  |   H    |  L   |  L   |   H   |
+| Route prefetch on nav `mouseenter` (`import()` the next chunk)           |   M    |  L   |  L   |   M   |
+| Debounce Import raw-text re-parse (250 ms)                               |   M    |  L   |  L   |   M   |
+| Persistence round-trip tests (export→import, corrupt import)             |   M    |  L   |  L   |   H   |
+| `EmptyState` on empty history/snapshots; chart skeleton during lazy load |   M    |  L   |  L   |   M   |
+| Filename with date on export; "copy to clipboard"                        |   L    |  L   |  L   |   M   |
 
 ## 2. Short term — ~1 week
 
-| Item | Impact | Diff | Risk | Value |
-|------|:---:|:---:|:---:|:---:|
-| `Dialog`/confirm + `Toast` primitives; replace `window.confirm` & inline banner | M | M | L | M |
-| Unsaved-changes guard on Profile/Builds (router blocker) | H | M | M | H |
-| Replace raw JSON textareas (skills/companions/…) with a row editor | H | M | M | H |
-| RTL coverage for Profile/Import save paths + `Field`/`Banner` | M | M | L | H |
-| Self-host Tesseract worker/core/lang (pin version, offline, privacy) | M | M | M | M |
-| CONTRIBUTING.md + ADRs for the architecture decisions | M | L | L | M |
+| Item                                                                            | Impact | Diff | Risk | Value |
+| ------------------------------------------------------------------------------- | :----: | :--: | :--: | :---: |
+| `Dialog`/confirm + `Toast` primitives; replace `window.confirm` & inline banner |   M    |  M   |  L   |   M   |
+| Unsaved-changes guard on Profile/Builds (router blocker)                        |   H    |  M   |  M   |   H   |
+| Replace raw JSON textareas (skills/companions/…) with a row editor              |   H    |  M   |  M   |   H   |
+| RTL coverage for Profile/Import save paths + `Field`/`Banner`                   |   M    |  M   |  L   |   H   |
+| Self-host Tesseract worker/core/lang (pin version, offline, privacy)            |   M    |  M   |  M   |   M   |
+| CONTRIBUTING.md + ADRs for the architecture decisions                           |   M    |  L   |  L   |   M   |
 
 ## 3. Medium term — ~1 month
 
-| Item | Impact | Diff | Risk | Value |
-|------|:---:|:---:|:---:|:---:|
-| Snapshot diffing ("+12 stages, +8% crit since last import") on Dashboard | H | M | L | H |
-| History: select metric, date-range filter, per-snapshot edit/delete | M | M | M | M |
-| Storybook/Ladle for `ui/` with a11y addon + visual regression | M | M | L | M |
-| i18n scaffolding (extract fr strings; the type/label split already enables it) | M | M | M | M |
-| Playwright happy-path e2e in CI (import → dashboard → snapshot → history) | M | M | M | H |
-| Evaluate Zod/Valibot to generate types+validators from one schema | M | M | M | M |
+| Item                                                                           | Impact | Diff | Risk | Value |
+| ------------------------------------------------------------------------------ | :----: | :--: | :--: | :---: |
+| Snapshot diffing ("+12 stages, +8% crit since last import") on Dashboard       |   H    |  M   |  L   |   H   |
+| History: select metric, date-range filter, per-snapshot edit/delete            |   M    |  M   |  M   |   M   |
+| Storybook/Ladle for `ui/` with a11y addon + visual regression                  |   M    |  M   |  L   |   M   |
+| i18n scaffolding (extract fr strings; the type/label split already enables it) |   M    |  M   |  M   |   M   |
+| Playwright happy-path e2e in CI (import → dashboard → snapshot → history)      |   M    |  M   |  M   |   H   |
+| Evaluate Zod/Valibot to generate types+validators from one schema              |   M    |  M   |  M   |   M   |
 
 ## 4. Long term
 
-| Item | Impact | Diff | Risk | Value |
-|------|:---:|:---:|:---:|:---:|
-| Pluggable OCR "profiles" per game screen (registry of extractor rule-sets) | H | H | M | H |
-| Swap Recharts for uPlot/visx if chart-route weight matters (−60–80 kB gzip) | M | H | M | M |
-| Optional cloud sync / multi-device (the `AppExport` schema + validation is the seam) | H | H | H | M |
-| PWA: offline shell + installable (self-hosted Tesseract makes OCR work offline) | M | M | M | M |
-| Web Worker for OCR orchestration to keep the main thread free on batches | M | M | M | M |
+| Item                                                                                 | Impact | Diff | Risk | Value |
+| ------------------------------------------------------------------------------------ | :----: | :--: | :--: | :---: |
+| Pluggable OCR "profiles" per game screen (registry of extractor rule-sets)           |   H    |  H   |  M   |   H   |
+| Swap Recharts for uPlot/visx if chart-route weight matters (−60–80 kB gzip)          |   M    |  H   |  M   |   M   |
+| Optional cloud sync / multi-device (the `AppExport` schema + validation is the seam) |   H    |  H   |  H   |   M   |
+| PWA: offline shell + installable (self-hosted Tesseract makes OCR work offline)      |   M    |  M   |  M   |   M   |
+| Web Worker for OCR orchestration to keep the main thread free on batches             |   M    |  M   |  M   |   M   |
 
 ---
 

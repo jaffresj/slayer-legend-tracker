@@ -1,15 +1,20 @@
 # Phase 5 — Performance Review
 
+> **Update (post-OCR removal):** OCR (Tesseract.js) and React Query were removed
+> when OCR was dropped in favour of manual entry. Initial JS gzip is now
+> **77.4 kB** (entry chunk 239.8 kB raw) — **−62% vs the original 203 kB**. The
+> Tesseract row below is historical; it's no longer a dependency at all.
+
 ## Headline
 
-| Metric | Before | After | Δ |
-|--------|-------:|------:|---|
-| Initial JS (eagerly loaded, gzip) | **203.22 kB** | **~85 kB** | **−58%** |
-| Initial JS (raw) | 665.88 kB | ~266 kB | −60% |
-| Bundle shape | 1 monolith | 20 cacheable chunks | — |
-| Recharts (~100 kB gzip) | eager, all routes | chart routes only | deferred |
-| Tesseract.js | eager (static import) | loaded on scan action | deferred |
-| Total JS shipped | 665.88 kB | 657 kB | ~flat (split, not added) |
+| Metric                            |                Before |                      After | Δ        |
+| --------------------------------- | --------------------: | -------------------------: | -------- |
+| Initial JS (eagerly loaded, gzip) |         **203.22 kB** |                **77.4 kB** | **−62%** |
+| Initial JS (raw)                  |             665.88 kB |                    ~240 kB | −64%     |
+| Bundle shape                      |            1 monolith | per-route cacheable chunks | —        |
+| Recharts (~100 kB gzip)           |     eager, all routes |          chart routes only | deferred |
+| Tesseract.js                      | eager (static import) |                **removed** | −dep     |
+| React Query                       |                 eager | **removed** (was OCR-only) | −dep     |
 
 Total bytes barely changed — the win is **what loads when**. A user landing on
 `/import`, `/profile`, `/builds`, `/daily`, or `/settings` no longer downloads
@@ -78,11 +83,11 @@ stores / lib / data       <1–2 kB each
 
 ## Remaining opportunities (see [ROADMAP](./ROADMAP.md))
 
-| Opportunity | Est. gain | Effort |
-|-------------|-----------|--------|
-| Debounce the Import raw-text re-parse | Removes keystroke jank on large pastes | S |
-| Prefetch the likely-next route on nav hover (`import()` on `mouseenter`) | Hides lazy latency | S |
-| Self-host Tesseract worker/core/lang to control CDN/version & enable offline | Reliability + privacy | M |
-| Manual `manualChunks` to split React vs Router vs Query for finer caching | Marginal | S |
-| Virtualise long lists if snapshots → hundreds (history is capped at 365) | Scales charts | M |
-| Replace Recharts with a lighter chart lib (uPlot/visx) if bundle matters | −60–80 kB gzip on chart routes | L |
+| Opportunity                                                                  | Est. gain                              | Effort |
+| ---------------------------------------------------------------------------- | -------------------------------------- | ------ |
+| Debounce the Import raw-text re-parse                                        | Removes keystroke jank on large pastes | S      |
+| Prefetch the likely-next route on nav hover (`import()` on `mouseenter`)     | Hides lazy latency                     | S      |
+| Self-host Tesseract worker/core/lang to control CDN/version & enable offline | Reliability + privacy                  | M      |
+| Manual `manualChunks` to split React vs Router vs Query for finer caching    | Marginal                               | S      |
+| Virtualise long lists if snapshots → hundreds (history is capped at 365)     | Scales charts                          | M      |
+| Replace Recharts with a lighter chart lib (uPlot/visx) if bundle matters     | −60–80 kB gzip on chart routes         | L      |

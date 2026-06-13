@@ -5,7 +5,6 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 // téléchargé. Le bundle initial ne contient plus ni Recharts (dashboard/
 // history) ni les pages lourdes.
 const DashboardPage = lazy(() => import('@/features/dashboard'))
-const ImportPage = lazy(() => import('@/features/import'))
 const HistoryPage = lazy(() => import('@/features/history'))
 const ProfilePage = lazy(() => import('@/features/profile'))
 const BuildsPage = lazy(() => import('@/features/builds'))
@@ -25,7 +24,6 @@ export function AppRoutes() {
     <Suspense fallback={<RouteFallback />}>
       <Routes>
         <Route path="/" element={<DashboardPage />} />
-        <Route path="/import" element={<ImportPage />} />
         <Route path="/history" element={<HistoryPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/builds" element={<BuildsPage />} />
