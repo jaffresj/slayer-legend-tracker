@@ -1,12 +1,5 @@
 import { buildTemplates, gameSkills } from '@/data'
-import type {
-  BuildCategory,
-  BuildTemplate,
-  GameSkill,
-  Goal,
-  PlayerSkill,
-  SkillElement,
-} from '@/types/domain'
+import type { BuildCategory, BuildTemplate, GameSkill, Goal, SkillElement } from '@/types/domain'
 
 const skillsById = new Map<string, GameSkill>(gameSkills.map((skill) => [skill.id, skill]))
 
@@ -64,20 +57,6 @@ const CATEGORY_LABELS: Record<BuildCategory, string> = {
 
 export function categoryLabel(category: BuildCategory): string {
   return CATEGORY_LABELS[category]
-}
-
-/** Construit une compétence possédée (PlayerSkill) à partir du catalogue. */
-export function toPlayerSkill(skill: GameSkill, level = 1, equipped = false): PlayerSkill {
-  return {
-    id: skill.id,
-    name: skill.name,
-    rarity: 'commun',
-    description: skill.nameEn,
-    type: skill.kind,
-    tags: [...skill.tags],
-    level,
-    equipped,
-  }
 }
 
 /**

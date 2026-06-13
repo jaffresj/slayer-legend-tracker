@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import { buildTemplates, gameSkills } from '@/data'
-import { isPlayerSkill } from './validate'
 import {
   ELEMENT_LABELS,
   categoryLabel,
@@ -10,7 +9,6 @@ import {
   resolveSkillNames,
   searchSkills,
   templatesByCategory,
-  toPlayerSkill,
 } from './skills'
 
 describe('searchSkills', () => {
@@ -77,22 +75,6 @@ describe('libellés d’éléments', () => {
     for (const skill of gameSkills) {
       expect(ELEMENT_LABELS[skill.element]).toBeDefined()
     }
-  })
-})
-
-describe('toPlayerSkill', () => {
-  it('construit une compétence possédée valide depuis le catalogue', () => {
-    const skill = getSkill('fulgurous')
-    expect(skill).toBeDefined()
-    const owned = toPlayerSkill(skill!, 5, true)
-    expect(owned).toMatchObject({ id: 'fulgurous', name: 'Fulgurant', level: 5, equipped: true })
-    expect(isPlayerSkill(owned)).toBe(true)
-  })
-
-  it('niveau 1 / non équipée par défaut', () => {
-    const owned = toPlayerSkill(getSkill('rage')!)
-    expect(owned.level).toBe(1)
-    expect(owned.equipped).toBe(false)
   })
 })
 

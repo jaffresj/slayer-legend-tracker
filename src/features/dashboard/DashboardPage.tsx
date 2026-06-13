@@ -6,7 +6,9 @@ import { PageHeader } from '@/components/layout/PageHeader'
 import { Card, CardHeader, Select, StatTile } from '@/components/ui'
 import { GOALS, goalLabels } from '@/lib/labels'
 import { formatNumber, formatPercent } from '@/lib/format'
+import { getSkill } from '@/lib/skills'
 import { getRecommendations } from '@/services/recommendations/engine'
+import { useBuildStore } from '@/stores/buildStore'
 import { useHistoryStore } from '@/stores/historyStore'
 import { useProfileStore } from '@/stores/profileStore'
 import type { Goal } from '@/types/domain'
@@ -18,11 +20,23 @@ const goalOptions = GOALS.map((goal) => ({ value: goal, label: goalLabels[goal] 
 export function DashboardPage() {
   const profile = useProfileStore((state) => state.profile)
   const snapshots = useHistoryStore((state) => state.snapshots)
+  const builds = useBuildStore((state) => state.builds)
   const [goal, setGoal] = useState<Goal>('push_stage')
 
+  // Compétences « couvertes » = familles de tags présentes dans les builds.
+  const ownedSkillTags = useMemo(() => {
+    const tags = new Set<string>()
+    for (const build of builds) {
+      for (const skillId of build.skills) {
+        for (const tag of getSkill(skillId)?.tags ?? []) tags.add(tag)
+      }
+    }
+    return tags
+  }, [builds])
+
   const recommendations = useMemo(
-    () => getRecommendations(profile, goal).slice(0, 5),
-    [profile, goal],
+    () => getRecommendations(profile, goal, ownedSkillTags).slice(0, 5),
+    [profile, goal, ownedSkillTags],
   )
 
   return (

@@ -28,29 +28,45 @@
     "critical": 61,
     "deathStrike": 28
   },
-  "skills": [
+  "skills": [],
+  "companions": [
     {
-      "id": "fulgurous",
-      "name": "Fulgurant",
+      "id": "ellie",
+      "name": "Ellie",
       "rarity": "commun",
-      "description": "Fulgurous",
-      "type": "passive",
-      "tags": ["farm", "or", "aoe", "progression"],
-      "level": 7,
-      "equipped": true
+      "description": "Compagnon vent",
+      "type": "compagnon",
+      "tags": ["vent"],
+      "level": 14
     },
     {
-      "id": "red-lightning",
-      "name": "Foudre Rouge",
+      "id": "zeke",
+      "name": "Zeke",
       "rarity": "commun",
-      "description": "Red Lightning",
-      "type": "active",
-      "tags": ["aoe", "boss", "progression"],
-      "level": 4,
-      "equipped": true
+      "description": "Compagnon terre",
+      "type": "compagnon",
+      "tags": ["terre"],
+      "level": 9
+    },
+    {
+      "id": "miho",
+      "name": "Miho",
+      "rarity": "commun",
+      "description": "Compagnon feu",
+      "type": "compagnon",
+      "tags": ["feu"],
+      "level": 13
+    },
+    {
+      "id": "luna",
+      "name": "Luna",
+      "rarity": "commun",
+      "description": "Compagnon eau",
+      "type": "compagnon",
+      "tags": ["eau"],
+      "level": 12
     }
   ],
-  "companions": [],
   "equipment": [],
   "relics": []
 }

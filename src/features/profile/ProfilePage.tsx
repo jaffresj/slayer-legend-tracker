@@ -1,27 +1,13 @@
 import { Save } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { PageHeader } from '@/components/layout/PageHeader'
-import { Banner, Button, Card, CardHeader, Field, TextareaField } from '@/components/ui'
+import { Banner, Button, Card, CardHeader, Field } from '@/components/ui'
 import { useStatusMessage } from '@/hooks/useStatusMessage'
 import { parseNumberInput } from '@/lib/format'
-import { isPlayerCompanion, isPlayerEquipment, isPlayerRelic, parseJsonArray } from '@/lib/validate'
 import { useHistoryStore } from '@/stores/historyStore'
 import { useProfileStore } from '@/stores/profileStore'
-import type { PlayerProfile, PlayerSkill } from '@/types/domain'
-import { OwnedSkillsEditor } from './components/OwnedSkillsEditor'
-
-// Les compétences ont un éditeur dédié (catalogue) ; le reste reste en JSON
-// faute de catalogue dédié pour l'instant.
-const JSON_LIST_KEYS = ['companions', 'equipment', 'relics'] as const
-type JsonListKey = (typeof JSON_LIST_KEYS)[number]
-
-function listsFromProfile(profile: PlayerProfile): Record<JsonListKey, string> {
-  return {
-    companions: JSON.stringify(profile.companions, null, 2),
-    equipment: JSON.stringify(profile.equipment, null, 2),
-    relics: JSON.stringify(profile.relics, null, 2),
-  }
-}
+import type { PlayerProfile } from '@/types/domain'
+import { ItemListEditor } from './components/ItemListEditor'
 
 export function ProfilePage() {
   const profile = useProfileStore((state) => state.profile)
@@ -30,12 +16,10 @@ export function ProfilePage() {
   const { message, notify } = useStatusMessage()
 
   const [draft, setDraft] = useState<PlayerProfile>(profile)
-  const [lists, setLists] = useState(() => listsFromProfile(profile))
 
   // Resynchronise le brouillon si le profil change ailleurs (import JSON / reset).
   useEffect(() => {
     setDraft(profile)
-    setLists(listsFromProfile(profile))
   }, [profile])
 
   function updatePlayer(key: keyof PlayerProfile['player'], value: string) {
@@ -55,32 +39,11 @@ export function ProfilePage() {
     }))
   }
 
-  function setSkills(skills: PlayerSkill[]) {
-    setDraft((current) => ({ ...current, skills }))
-  }
-
   function saveProfile() {
-    // Compétences : déjà structurées dans draft.skills. Les autres listes
-    // restent en JSON, validées par guard (type précis préservé).
-    const companions = parseJsonArray(lists.companions, isPlayerCompanion)
-    const equipment = parseJsonArray(lists.equipment, isPlayerEquipment)
-    const relics = parseJsonArray(lists.relics, isPlayerRelic)
-
-    const invalid = !companions
-      ? 'companions'
-      : !equipment
-        ? 'equipment'
-        : !relics
-          ? 'relics'
-          : null
-    if (invalid || !companions || !equipment || !relics) {
-      notify('error', `JSON invalide ou structure incorrecte dans la liste « ${invalid} ».`)
-      return
-    }
-
-    const nextProfile: PlayerProfile = { ...draft, companions, equipment, relics }
-    replaceProfile(nextProfile)
-    addSnapshot(nextProfile)
+    // Tout est déjà structuré dans le brouillon : sauvegarde directe, pas de
+    // parsing JSON ni de chemin d'erreur.
+    replaceProfile(draft)
+    addSnapshot(draft)
     notify('success', 'Profil enregistré et snapshot ajouté.')
   }
 
@@ -247,26 +210,36 @@ export function ProfilePage() {
       </section>
 
       <Card>
-        <CardHeader title="Compétences possédées" count={draft.skills.length} />
-        <OwnedSkillsEditor skills={draft.skills} onChange={setSkills} />
+        <CardHeader title="Compagnons" count={draft.companions.length} />
+        <ItemListEditor
+          items={draft.companions}
+          onChange={(items) => setDraft((current) => ({ ...current, companions: items }))}
+          itemNoun="compagnon"
+        />
       </Card>
 
       <Card>
-        <CardHeader title="Autres listes (JSON)" />
-        <div className="grid gap-4 xl:grid-cols-3">
-          {JSON_LIST_KEYS.map((key) => (
-            <TextareaField
-              key={key}
-              label={key.charAt(0).toUpperCase() + key.slice(1)}
-              mono
-              value={lists[key]}
-              onChange={(event) =>
-                setLists((current) => ({ ...current, [key]: event.target.value }))
-              }
-              className="min-h-56"
-            />
-          ))}
-        </div>
+        <CardHeader title="Équipements" count={draft.equipment.length} />
+        <ItemListEditor
+          items={draft.equipment}
+          withEquipped
+          onChange={(items) =>
+            setDraft((current) => ({
+              ...current,
+              equipment: items.map((item) => ({ ...item, equipped: item.equipped ?? false })),
+            }))
+          }
+          itemNoun="équipement"
+        />
+      </Card>
+
+      <Card>
+        <CardHeader title="Reliques" count={draft.relics.length} />
+        <ItemListEditor
+          items={draft.relics}
+          onChange={(items) => setDraft((current) => ({ ...current, relics: items }))}
+          itemNoun="relique"
+        />
       </Card>
     </div>
   )

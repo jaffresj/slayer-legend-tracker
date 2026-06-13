@@ -53,4 +53,12 @@ describe('getRecommendations', () => {
       expect(rec.score).toBeLessThanOrEqual(100)
     }
   })
+
+  it('déprioritise une famille de skills déjà couverte par un build', () => {
+    const without = getRecommendations(defaultProfile, 'push_stage')
+    const covered = getRecommendations(defaultProfile, 'push_stage', new Set(['critique']))
+    const scoreWithout = without.find((r) => r.id === 'skill-critical')?.score ?? 0
+    const scoreCovered = covered.find((r) => r.id === 'skill-critical')?.score ?? 0
+    expect(scoreCovered).toBeLessThan(scoreWithout)
+  })
 })

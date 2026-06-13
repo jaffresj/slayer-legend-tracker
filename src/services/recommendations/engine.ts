@@ -37,16 +37,17 @@ function makeRecommendation(
 }
 
 /**
- * Pousse une compétence si elle n'est pas possédée ou encore faible, et la
- * déprioritise quand elle est déjà bien montée. Tags = familles de skills.
+ * Recommande une famille de compétences si AUCUN build du joueur ne la couvre,
+ * et la déprioritise si un build l'inclut déjà. Les compétences possédées sont
+ * ainsi déduites des builds (plus de liste « owned » séparée). Tags = familles.
  */
-function scoreOwnedSkill(profile: PlayerProfile, tags: string[], baseScore: number) {
-  const ownedMatch = profile.skills.find((skill) => tags.some((tag) => skill.tags.includes(tag)))
-
-  if (!ownedMatch) return baseScore + 8
-  if (ownedMatch.level < 20) return baseScore + 12
-  if (ownedMatch.level < 50) return baseScore + 4
-  return baseScore - 8
+function scoreSkillCoverage(
+  ownedSkillTags: ReadonlySet<string>,
+  tags: string[],
+  baseScore: number,
+) {
+  const covered = tags.some((tag) => ownedSkillTags.has(tag))
+  return covered ? baseScore - 6 : baseScore + 10
 }
 
 /** Pression d'attaque (0-100) pour atteindre le prochain palier recommandé. */
@@ -101,7 +102,11 @@ const goalModifiers: Record<Goal, Record<string, number>> = {
   },
 }
 
-export function getRecommendations(profile: PlayerProfile, goal: Goal): Recommendation[] {
+export function getRecommendations(
+  profile: PlayerProfile,
+  goal: Goal,
+  ownedSkillTags: ReadonlySet<string> = new Set(),
+): Recommendation[] {
   const gapPressure = attackGapPressure(profile)
   const critNeed = Math.max(0, 60 - profile.stats.criticalRate)
   const deathStrikeNeed = Math.max(0, 35 - profile.stats.deathStrike)
@@ -151,21 +156,21 @@ export function getRecommendations(profile: PlayerProfile, goal: Goal): Recommen
     makeRecommendation(
       'skill-critical',
       sampleCritSkill?.name ?? 'Compétence critique',
-      scoreOwnedSkill(profile, ['critique'], 58),
+      scoreSkillCoverage(ownedSkillTags, ['critique'], 58),
       'Prioriser une compétence critique aide à convertir les stats offensives en progression.',
       'skill',
     ),
     makeRecommendation(
       'skill-farm',
       sampleGoldSkill?.name ?? 'Compétence de farm',
-      scoreOwnedSkill(profile, ['farm', 'or'], 52),
+      scoreSkillCoverage(ownedSkillTags, ['farm', 'or'], 52),
       "Une compétence de farm devient prioritaire quand les gains d'or ralentissent.",
       'skill',
     ),
     makeRecommendation(
       'skill-guard',
       sampleGuardSkill?.name ?? 'Compétence de survie',
-      scoreOwnedSkill(profile, ['survie', 'defense'], 48),
+      scoreSkillCoverage(ownedSkillTags, ['survie', 'defense'], 48),
       'Une option défensive réduit les échecs sur les combats prolongés.',
       'skill',
     ),

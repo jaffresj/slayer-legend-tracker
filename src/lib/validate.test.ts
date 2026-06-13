@@ -1,10 +1,22 @@
 import { describe, expect, it } from 'vitest'
 import { defaultProfile } from '@/data'
+import type { PlayerSkill } from '@/types/domain'
 import { isPlayerSkill, isSnapshot, normalizeAppExport, parseJsonArray } from './validate'
+
+const sampleSkill: PlayerSkill = {
+  id: 'fulgurous',
+  name: 'Fulgurant',
+  rarity: 'commun',
+  description: 'Fulgurous',
+  type: 'passive',
+  tags: ['farm', 'aoe'],
+  level: 7,
+  equipped: true,
+}
 
 describe('isPlayerSkill', () => {
   it('valide une compétence complète', () => {
-    expect(isPlayerSkill(defaultProfile.skills[0])).toBe(true)
+    expect(isPlayerSkill(sampleSkill)).toBe(true)
   })
 
   it('rejette un objet auquel il manque des champs', () => {
@@ -32,8 +44,8 @@ describe('isSnapshot', () => {
 
 describe('parseJsonArray', () => {
   it('parse et valide un tableau homogène', () => {
-    const json = JSON.stringify(defaultProfile.skills)
-    expect(parseJsonArray(json, isPlayerSkill)).toHaveLength(defaultProfile.skills.length)
+    const json = JSON.stringify([sampleSkill, sampleSkill])
+    expect(parseJsonArray(json, isPlayerSkill)).toHaveLength(2)
   })
 
   it('retourne null pour un JSON malformé', () => {
