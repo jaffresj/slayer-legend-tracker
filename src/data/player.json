@@ -30,13 +30,23 @@
   },
   "skills": [
     {
-      "id": "sample-critical-edge",
-      "name": "Lame critique exemple",
-      "rarity": "exemple",
-      "description": "Donnée d'exemple non officielle pour tester les builds.",
-      "type": "attaque",
-      "tags": ["critique", "progression"],
-      "level": 24,
+      "id": "fulgurous",
+      "name": "Fulgurant",
+      "rarity": "commun",
+      "description": "Fulgurous",
+      "type": "passive",
+      "tags": ["farm", "or", "aoe", "progression"],
+      "level": 7,
+      "equipped": true
+    },
+    {
+      "id": "red-lightning",
+      "name": "Foudre Rouge",
+      "rarity": "commun",
+      "description": "Red Lightning",
+      "type": "active",
+      "tags": ["aoe", "boss", "progression"],
+      "level": 4,
       "equipped": true
     }
   ],

@@ -1,18 +1,8 @@
 import { useId } from 'react'
 import { Badge } from '@/components/ui'
-import type { BadgeTone } from '@/components/ui'
 import { ELEMENT_LABELS } from '@/lib/skills'
-import type { GameSkill, SkillElement } from '@/types/domain'
-
-const elementTone: Record<SkillElement, BadgeTone> = {
-  feu: 'rose',
-  glace: 'cyan',
-  foudre: 'amber',
-  terre: 'emerald',
-  vent: 'neutral',
-  eau: 'cyan',
-  neutre: 'neutral',
-}
+import type { GameSkill } from '@/types/domain'
+import { elementTone } from './elementTone'
 
 type SkillToggleProps = {
   skill: GameSkill

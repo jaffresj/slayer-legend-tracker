@@ -6,8 +6,8 @@ import { GOALS, goalLabels } from '@/lib/labels'
 import { getSkillName } from '@/lib/skills'
 import { useBuildStore } from '@/stores/buildStore'
 import type { BuildTemplate, Goal } from '@/types/domain'
+import { SkillPicker } from '@/components/skills/SkillPicker'
 import { BuildTemplateList } from './components/BuildTemplateList'
-import { SkillPicker } from './components/SkillPicker'
 
 const goalOptions = GOALS.map((goal) => ({ value: goal, label: goalLabels[goal] }))
 

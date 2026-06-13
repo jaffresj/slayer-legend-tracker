@@ -4,23 +4,19 @@ import { PageHeader } from '@/components/layout/PageHeader'
 import { Banner, Button, Card, CardHeader, Field, TextareaField } from '@/components/ui'
 import { useStatusMessage } from '@/hooks/useStatusMessage'
 import { parseNumberInput } from '@/lib/format'
-import {
-  isPlayerCompanion,
-  isPlayerEquipment,
-  isPlayerRelic,
-  isPlayerSkill,
-  parseJsonArray,
-} from '@/lib/validate'
+import { isPlayerCompanion, isPlayerEquipment, isPlayerRelic, parseJsonArray } from '@/lib/validate'
 import { useHistoryStore } from '@/stores/historyStore'
 import { useProfileStore } from '@/stores/profileStore'
-import type { PlayerProfile } from '@/types/domain'
+import type { PlayerProfile, PlayerSkill } from '@/types/domain'
+import { OwnedSkillsEditor } from './components/OwnedSkillsEditor'
 
-const LIST_KEYS = ['skills', 'companions', 'equipment', 'relics'] as const
-type ListKey = (typeof LIST_KEYS)[number]
+// Les compétences ont un éditeur dédié (catalogue) ; le reste reste en JSON
+// faute de catalogue dédié pour l'instant.
+const JSON_LIST_KEYS = ['companions', 'equipment', 'relics'] as const
+type JsonListKey = (typeof JSON_LIST_KEYS)[number]
 
-function listsFromProfile(profile: PlayerProfile): Record<ListKey, string> {
+function listsFromProfile(profile: PlayerProfile): Record<JsonListKey, string> {
   return {
-    skills: JSON.stringify(profile.skills, null, 2),
     companions: JSON.stringify(profile.companions, null, 2),
     equipment: JSON.stringify(profile.equipment, null, 2),
     relics: JSON.stringify(profile.relics, null, 2),
@@ -36,7 +32,7 @@ export function ProfilePage() {
   const [draft, setDraft] = useState<PlayerProfile>(profile)
   const [lists, setLists] = useState(() => listsFromProfile(profile))
 
-  // Resynchronise le brouillon si le profil change ailleurs (import OCR / JSON).
+  // Resynchronise le brouillon si le profil change ailleurs (import JSON / reset).
   useEffect(() => {
     setDraft(profile)
     setLists(listsFromProfile(profile))
@@ -59,29 +55,30 @@ export function ProfilePage() {
     }))
   }
 
+  function setSkills(skills: PlayerSkill[]) {
+    setDraft((current) => ({ ...current, skills }))
+  }
+
   function saveProfile() {
-    // Parsing explicite par liste : chaque guard préserve son type précis
-    // (un seul as générique ferait perdre la spécificité à PlayerProfile).
-    const skills = parseJsonArray(lists.skills, isPlayerSkill)
+    // Compétences : déjà structurées dans draft.skills. Les autres listes
+    // restent en JSON, validées par guard (type précis préservé).
     const companions = parseJsonArray(lists.companions, isPlayerCompanion)
     const equipment = parseJsonArray(lists.equipment, isPlayerEquipment)
     const relics = parseJsonArray(lists.relics, isPlayerRelic)
 
-    const invalid = !skills
-      ? 'skills'
-      : !companions
-        ? 'companions'
-        : !equipment
-          ? 'equipment'
-          : !relics
-            ? 'relics'
-            : null
-    if (invalid || !skills || !companions || !equipment || !relics) {
+    const invalid = !companions
+      ? 'companions'
+      : !equipment
+        ? 'equipment'
+        : !relics
+          ? 'relics'
+          : null
+    if (invalid || !companions || !equipment || !relics) {
       notify('error', `JSON invalide ou structure incorrecte dans la liste « ${invalid} ».`)
       return
     }
 
-    const nextProfile: PlayerProfile = { ...draft, skills, companions, equipment, relics }
+    const nextProfile: PlayerProfile = { ...draft, companions, equipment, relics }
     replaceProfile(nextProfile)
     addSnapshot(nextProfile)
     notify('success', 'Profil enregistré et snapshot ajouté.')
@@ -250,9 +247,14 @@ export function ProfilePage() {
       </section>
 
       <Card>
-        <CardHeader title="Listes du profil" />
-        <div className="grid gap-4 xl:grid-cols-2">
-          {LIST_KEYS.map((key) => (
+        <CardHeader title="Compétences possédées" count={draft.skills.length} />
+        <OwnedSkillsEditor skills={draft.skills} onChange={setSkills} />
+      </Card>
+
+      <Card>
+        <CardHeader title="Autres listes (JSON)" />
+        <div className="grid gap-4 xl:grid-cols-3">
+          {JSON_LIST_KEYS.map((key) => (
             <TextareaField
               key={key}
               label={key.charAt(0).toUpperCase() + key.slice(1)}
@@ -261,7 +263,7 @@ export function ProfilePage() {
               onChange={(event) =>
                 setLists((current) => ({ ...current, [key]: event.target.value }))
               }
-              className="min-h-64"
+              className="min-h-56"
             />
           ))}
         </div>

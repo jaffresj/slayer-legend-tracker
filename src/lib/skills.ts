@@ -1,5 +1,12 @@
 import { buildTemplates, gameSkills } from '@/data'
-import type { BuildCategory, BuildTemplate, GameSkill, SkillElement } from '@/types/domain'
+import type {
+  BuildCategory,
+  BuildTemplate,
+  GameSkill,
+  Goal,
+  PlayerSkill,
+  SkillElement,
+} from '@/types/domain'
 
 const skillsById = new Map<string, GameSkill>(gameSkills.map((skill) => [skill.id, skill]))
 
@@ -57,6 +64,35 @@ const CATEGORY_LABELS: Record<BuildCategory, string> = {
 
 export function categoryLabel(category: BuildCategory): string {
   return CATEGORY_LABELS[category]
+}
+
+/** Construit une compétence possédée (PlayerSkill) à partir du catalogue. */
+export function toPlayerSkill(skill: GameSkill, level = 1, equipped = false): PlayerSkill {
+  return {
+    id: skill.id,
+    name: skill.name,
+    rarity: 'commun',
+    description: skill.nameEn,
+    type: skill.kind,
+    tags: [...skill.tags],
+    level,
+    equipped,
+  }
+}
+
+/**
+ * Builds méta conseillés pour un objectif. Renvoie d'abord les builds dont
+ * l'objectif correspond, sinon un repli défensif (Volonté de Fer / de la Terre).
+ */
+export function recommendedBuilds(goal: Goal, limit = 3): BuildTemplate[] {
+  const direct = buildTemplates.filter((template) => template.goal === goal)
+  if (direct.length) return direct.slice(0, limit)
+  return buildTemplates
+    .filter(
+      (template) =>
+        template.skills.includes('iron-will') || template.skills.includes('earths-will'),
+    )
+    .slice(0, limit)
 }
 
 /** Regroupe les builds méta par catégorie, dans l'ordre d'apparition. */

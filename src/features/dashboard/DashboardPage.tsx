@@ -11,6 +11,7 @@ import { useHistoryStore } from '@/stores/historyStore'
 import { useProfileStore } from '@/stores/profileStore'
 import type { Goal } from '@/types/domain'
 import { RecommendationCard } from './components/RecommendationCard'
+import { RecommendedBuilds } from './components/RecommendedBuilds'
 
 const goalOptions = GOALS.map((goal) => ({ value: goal, label: goalLabels[goal] }))
 
@@ -107,6 +108,11 @@ export function DashboardPage() {
           </div>
         </Card>
       </section>
+
+      <Card>
+        <CardHeader title={`Builds conseillés — ${goalLabels[goal]}`} />
+        <RecommendedBuilds goal={goal} />
+      </Card>
     </div>
   )
 }

@@ -8,7 +8,7 @@ type TemplateInput = Omit<BuildTemplate, 'skills'> & { skills: readonly SkillId[
 
 const GUIDE = 'Guide communautaire (Grumpus)'
 
-export const buildTemplates = [
+const TEMPLATES = [
   {
     id: 'promo-mithril',
     name: 'Promotion — Mithril',
@@ -328,3 +328,7 @@ export const buildTemplates = [
     source: GUIDE,
   },
 ] as const satisfies readonly TemplateInput[]
+
+// Élargi en `readonly BuildTemplate[]` pour les consommateurs (goal optionnel,
+// skills string[]) ; la validation des ids reste assurée par le `satisfies`.
+export const buildTemplates: readonly BuildTemplate[] = TEMPLATES
