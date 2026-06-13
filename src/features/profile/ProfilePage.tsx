@@ -3,8 +3,7 @@ import { useEffect, useState } from 'react'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Banner, Button, Card, CardHeader, Field } from '@/components/ui'
 import { useStatusMessage } from '@/hooks/useStatusMessage'
-import { formatNumber, parseNumberInput } from '@/lib/format'
-import { computeEstimatedDamage } from '@/lib/stats'
+import { parseNumberInput } from '@/lib/format'
 import { useHistoryStore } from '@/stores/historyStore'
 import { useProfileStore } from '@/stores/profileStore'
 import type { PlayerProfile } from '@/types/domain'
@@ -127,13 +126,6 @@ export function ProfilePage() {
               type="number"
               value={draft.stats.attack}
               onChange={(e) => updateNumeric('stats', 'attack', e.target.value)}
-            />
-            <Field
-              label="Dégâts estimés (calculé)"
-              value={formatNumber(computeEstimatedDamage(draft.stats))}
-              readOnly
-              disabled
-              hint="Dérivé de l'attaque, du critique et de la frappe mortelle."
             />
             <Field
               label="Critique %"

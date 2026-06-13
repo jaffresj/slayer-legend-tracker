@@ -1,4 +1,4 @@
-import { Coins, Crosshair, Gem, Shield, Skull, Sparkles, TrendingUp } from 'lucide-react'
+import { Coins, Crosshair, Gem, Shield, Skull, Sword, TrendingUp } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 import { ProgressChart } from '@/components/charts/ProgressChart'
@@ -7,7 +7,6 @@ import { Card, CardHeader, Select, StatTile } from '@/components/ui'
 import { GOALS, goalLabels } from '@/lib/labels'
 import { formatNumber, formatPercent } from '@/lib/format'
 import { getSkill } from '@/lib/skills'
-import { computeEstimatedDamage } from '@/lib/stats'
 import { getRecommendations } from '@/services/recommendations/engine'
 import { useBuildStore } from '@/stores/buildStore'
 import { useHistoryStore } from '@/stores/historyStore'
@@ -67,10 +66,10 @@ export function DashboardPage() {
           tone="amber"
         />
         <StatTile
-          label="Dégâts estimés"
-          value={formatNumber(computeEstimatedDamage(profile.stats))}
-          detail={`Attaque ${formatNumber(profile.stats.attack)}`}
-          icon={<Sparkles size={18} />}
+          label="Attaque"
+          value={formatNumber(profile.stats.attack)}
+          detail={`Critique ${formatPercent(profile.stats.criticalRate)}`}
+          icon={<Sword size={18} />}
           tone="rose"
         />
         <StatTile
