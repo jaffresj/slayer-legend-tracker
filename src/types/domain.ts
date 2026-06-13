@@ -70,6 +70,51 @@ export type Stage = TaggedGameItem & {
   recommendedAttack: number
 }
 
+// --- Catalogue de compétences (données réelles du jeu) ---
+
+export type SkillElement = 'feu' | 'glace' | 'foudre' | 'terre' | 'vent' | 'eau' | 'neutre'
+
+/** active = lancée · passive = bonus permanent · buff = amplification · immortal = Rave/Mantra. */
+export type SkillKind = 'active' | 'passive' | 'buff' | 'immortal'
+
+export type GameSkill = {
+  id: string
+  /** Nom affiché en jeu (FR). */
+  name: string
+  /** Nom du guide communautaire (EN), pour la recherche et le mapping. */
+  nameEn: string
+  element: SkillElement
+  kind: SkillKind
+  /** Rôles/contenus pour le filtrage et le moteur de recommandations. */
+  tags: readonly string[]
+  /** Orthographes alternatives pour la recherche. */
+  aliases?: readonly string[]
+  /** true si la traduction FR n'est pas confirmée par une capture en jeu. */
+  tentative?: boolean
+}
+
+export type BuildCategory =
+  | 'promotion'
+  | 'spirit-dungeon'
+  | 'closed-mines'
+  | 'boss'
+  | 'farming'
+  | 'endgame'
+  | 'adventure'
+  | 'companion'
+  | 'rift'
+
+export type BuildTemplate = {
+  id: string
+  name: string
+  category: BuildCategory
+  goal?: Goal
+  /** ids de GameSkill — validés à la compilation dans buildTemplates.ts. */
+  skills: readonly string[]
+  description: string
+  source: string
+}
+
 export type PlayerProfile = {
   player: PlayerInfo
   resources: PlayerResources

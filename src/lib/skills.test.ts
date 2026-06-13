@@ -1,0 +1,78 @@
+import { describe, expect, it } from 'vitest'
+import { buildTemplates, gameSkills } from '@/data'
+import {
+  ELEMENT_LABELS,
+  categoryLabel,
+  getSkill,
+  getSkillName,
+  resolveSkillNames,
+  searchSkills,
+  templatesByCategory,
+} from './skills'
+
+describe('searchSkills', () => {
+  it('retourne tout le catalogue pour une requête vide', () => {
+    expect(searchSkills('')).toHaveLength(gameSkills.length)
+    expect(searchSkills('   ')).toHaveLength(gameSkills.length)
+  })
+
+  it('trouve par nom FR', () => {
+    const results = searchSkills('foudre rouge')
+    expect(results.map((s) => s.id)).toContain('red-lightning')
+  })
+
+  it('trouve par nom EN (guide)', () => {
+    const results = searchSkills('red lightning')
+    expect(results.map((s) => s.id)).toContain('red-lightning')
+  })
+
+  it('filtre par élément', () => {
+    const results = searchSkills('glace')
+    expect(results.length).toBeGreaterThan(0)
+    expect(results.every((s) => s.element === 'glace')).toBe(true)
+  })
+
+  it('est insensible à la casse', () => {
+    expect(searchSkills('FULGURANT').map((s) => s.id)).toContain('fulgurous')
+  })
+})
+
+describe('getSkillName / resolveSkillNames', () => {
+  it('résout un id en nom FR', () => {
+    expect(getSkillName('iron-will')).toBe('Volonté de Fer')
+  })
+
+  it('retombe sur l’id pour une compétence inconnue', () => {
+    expect(getSkillName('does-not-exist')).toBe('does-not-exist')
+  })
+
+  it('résout une liste d’ids', () => {
+    expect(resolveSkillNames(['fulgurous', 'rage'])).toEqual(['Fulgurant', 'Rage'])
+  })
+
+  it('getSkill retourne l’objet complet', () => {
+    expect(getSkill('rave')?.kind).toBe('immortal')
+  })
+})
+
+describe('templatesByCategory', () => {
+  it('regroupe sans perdre de build', () => {
+    const groups = templatesByCategory()
+    const total = groups.reduce((sum, group) => sum + group.templates.length, 0)
+    expect(total).toBe(buildTemplates.length)
+  })
+
+  it('chaque catégorie a un libellé', () => {
+    for (const { category } of templatesByCategory()) {
+      expect(categoryLabel(category).length).toBeGreaterThan(0)
+    }
+  })
+})
+
+describe('libellés d’éléments', () => {
+  it('couvre tous les éléments présents dans le catalogue', () => {
+    for (const skill of gameSkills) {
+      expect(ELEMENT_LABELS[skill.element]).toBeDefined()
+    }
+  })
+})
