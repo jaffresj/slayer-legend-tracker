@@ -7,6 +7,7 @@ import { Card, CardHeader, Select, StatTile } from '@/components/ui'
 import { GOALS, goalLabels } from '@/lib/labels'
 import { formatNumber, formatPercent } from '@/lib/format'
 import { getSkill } from '@/lib/skills'
+import { computeEstimatedDamage } from '@/lib/stats'
 import { getRecommendations } from '@/services/recommendations/engine'
 import { useBuildStore } from '@/stores/buildStore'
 import { useHistoryStore } from '@/stores/historyStore'
@@ -67,7 +68,7 @@ export function DashboardPage() {
         />
         <StatTile
           label="Dégâts estimés"
-          value={formatNumber(profile.stats.estimatedDamage)}
+          value={formatNumber(computeEstimatedDamage(profile.stats))}
           detail={`Attaque ${formatNumber(profile.stats.attack)}`}
           icon={<Sparkles size={18} />}
           tone="rose"

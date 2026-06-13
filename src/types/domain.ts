@@ -20,7 +20,6 @@ export type PlayerResources = {
 
 export type PlayerStats = {
   attack: number
-  estimatedDamage: number
   criticalRate: number
   criticalDamage: number
   deathStrike: number
